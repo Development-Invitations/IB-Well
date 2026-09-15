@@ -31,6 +31,7 @@ if ($adminExists) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Установка — <?= SITE_NAME ?></title>
+<link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body style="background:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;">

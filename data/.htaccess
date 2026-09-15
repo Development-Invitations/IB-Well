@@ -1,0 +1,5 @@
+# Запрещаем прямой доступ к файлам-«базе данных» из браузера
+Require all denied
+Deny from all
+Order allow,deny
+Deny from all

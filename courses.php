@@ -5,6 +5,7 @@ $courses = read_json('courses.json', []);
 $page_title = 'Курсы';
 $active = 'courses';
 require __DIR__ . '/includes/header.php';
+render_breadcrumbs([['label' => 'Курсы']]);
 ?>
 
 <div class="page-header">

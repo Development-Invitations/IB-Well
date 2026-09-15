@@ -1,33 +1,10 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>О нас — Ishonchli Buxgalter</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header class="site-header">
-  <div class="container">
-    <a href="index.html" class="brand">
-      <span class="brand-mark">iB</span>
-      <span class="brand-name">Ishonchli <b>Buxgalter</b></span>
-    </a>
-    <nav class="main-nav">
-      <a href="index.html">Главная</a>
-      <a href="courses.html">Курсы</a>
-      <a href="about.html" class="active">О нас</a>
-      <a href="blog.html">Блог</a>
-      <a href="contacts.html">Контакты</a>
-    </nav>
-    <div class="header-actions">
-      <span class="header-phone">+998 99 918 00 10</span>
-      <a href="contacts.html" class="btn btn-gold">Записаться</a>
-      <button class="nav-toggle" aria-label="Меню">☰</button>
-    </div>
-  </div>
-</header>
+<?php
+require_once __DIR__ . '/includes/config.php';
+$page_title = 'О нас';
+$active = 'about';
+require __DIR__ . '/includes/header.php';
+render_breadcrumbs([['label' => 'О нас']]);
+?>
 
 <div class="page-header">
   <div class="hero-ledger"></div>
@@ -112,47 +89,8 @@
 <section class="cta-band">
   <div class="container">
     <h2>Познакомиться с преподавателями лично?</h2>
-    <a href="contacts.html" class="btn btn-gold">Записаться на консультацию</a>
+    <a href="/contacts.php" class="btn btn-gold">Записаться на консультацию</a>
   </div>
 </section>
 
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="brand" style="margin-bottom:14px;">
-          <span class="brand-mark">iB</span>
-          <span class="brand-name">Ishonchli <b>Buxgalter</b></span>
-        </div>
-        <p>Учебный центр и 1С-франчайзи в Фергане. Обучаем бухучёту и 1С с 2018 года.</p>
-      </div>
-      <div>
-        <h4>Навигация</h4>
-        <a href="courses.html">Курсы</a>
-        <a href="about.html">О нас</a>
-        <a href="blog.html">Блог</a>
-        <a href="contacts.html">Контакты</a>
-      </div>
-      <div>
-        <h4>Курсы</h4>
-        <a href="courses.html#c1">1С:Бухгалтерия с нуля</a>
-        <a href="courses.html#c2">Налоговая отчётность</a>
-        <a href="courses.html#c4">1С:Зарплата и кадры</a>
-      </div>
-      <div>
-        <h4>Контакты</h4>
-        <a href="tel:+998999180010">+998 99 918 00 10</a>
-        <a href="https://t.me/ishonchli_buxgalter">@ishonchli_buxgalter</a>
-        <a href="contacts.html">г. Фергана, Узбекистан</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Ishonchli Buxgalter. Все права защищены.</span>
-      <span>Фергана, Узбекистан · 1С Франчайзинг · IT Park резидент</span>
-    </div>
-  </div>
-</footer>
-
-<script src="script.js"></script>
-</body>
-</html>
+<?php require __DIR__ . '/includes/footer.php'; ?>

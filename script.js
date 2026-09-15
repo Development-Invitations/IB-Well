@@ -17,14 +17,59 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  var form = document.querySelector('form[data-lead-form]');
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var success = document.querySelector('.form-success');
-      form.reset();
-      form.style.display = 'none';
-      if (success) success.style.display = 'block';
+  // Маска телефона: +998 XX XXX XX XX
+  document.querySelectorAll('[data-phone-mask]').forEach(function (input) {
+    function formatUzPhone(raw) {
+      var digits = raw.replace(/\D/g, '');
+      if (digits.indexOf('998') === 0) digits = digits.slice(3);
+      digits = digits.slice(0, 9);
+      var out = '+998';
+      if (digits.length > 0) out += ' ' + digits.slice(0, 2);
+      if (digits.length > 2) out += ' ' + digits.slice(2, 5);
+      if (digits.length > 5) out += ' ' + digits.slice(5, 7);
+      if (digits.length > 7) out += ' ' + digits.slice(7, 9);
+      return out;
+    }
+    input.addEventListener('focus', function () {
+      if (!input.value) input.value = '+998 ';
     });
-  }
+    input.addEventListener('input', function () {
+      input.value = formatUzPhone(input.value);
+    });
+    input.addEventListener('keydown', function (e) {
+      // не даём стереть "+998 " backspace'ом за один символ до пустоты
+      if (e.key === 'Backspace' && input.value.length <= 5) {
+        e.preventDefault();
+        input.value = '';
+      }
+    });
+  });
 });
+
+// Floating scroll-top + contact widget
+(function () {
+  var scrollBtn = document.getElementById('floatScrollTop');
+  var contactToggle = document.getElementById('floatContactToggle');
+  var widget = document.getElementById('floatWidget');
+  if (!scrollBtn || !contactToggle || !widget) return;
+
+  window.addEventListener('scroll', function () {
+    scrollBtn.classList.toggle('visible', window.scrollY > 400);
+  });
+
+  scrollBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  contactToggle.addEventListener('click', function () {
+    var isOpen = widget.classList.toggle('open');
+    contactToggle.classList.toggle('open', isOpen);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!widget.contains(e.target)) {
+      widget.classList.remove('open');
+      contactToggle.classList.remove('open');
+    }
+  });
+})();
