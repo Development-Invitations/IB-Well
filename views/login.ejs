@@ -1,0 +1,26 @@
+<%- include('partials/header', { pageTitle: 'Вход', active: 'account', breadcrumbs: [{label: 'Вход'}] }) %>
+
+<div class="page-header">
+  <div class="hero-ledger"></div>
+  <div class="container">
+    <div class="kicker">Личный кабинет</div>
+    <h1>Вход</h1>
+  </div>
+</div>
+
+<section>
+  <div class="container" style="max-width:480px;">
+    <div class="form-card" style="max-width:none;">
+      <% if (error) { %><p style="color:#8B2E2E;font-size:14.5px;"><%= error %></p><% } %>
+      <form method="post">
+        <input type="hidden" name="next" value="<%= next %>">
+        <div class="form-row"><label for="login">Логин</label><input type="text" id="login" name="login" required></div>
+        <div class="form-row"><label for="password">Пароль</label><input type="password" id="password" name="password" required></div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Войти</button>
+        <p class="form-note">Нет аккаунта? <a href="/register" style="border-bottom:1px solid var(--gold);">Зарегистрироваться</a></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

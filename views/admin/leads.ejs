@@ -1,0 +1,48 @@
+<%- include('partials/admin_header', { adminTitle: 'Заявки', adminActive: 'leads', adminLogin: adminLogin }) %>
+
+<div class="admin-topbar">
+  <h1>Заявки</h1>
+  <div class="admin-actions">
+    <a class="btn <%= filter==='all'?'btn-primary':'btn-ghost' %>" href="?filter=all">Все</a>
+    <a class="btn <%= filter==='new'?'btn-primary':'btn-ghost' %>" href="?filter=new">Новые</a>
+    <a class="btn <%= filter==='course'?'btn-primary':'btn-ghost' %>" href="?filter=course">На курс</a>
+    <a class="btn <%= filter==='consultation'?'btn-primary':'btn-ghost' %>" href="?filter=consultation">Консультации</a>
+  </div>
+</div>
+
+<div class="admin-panel">
+  <% leads.forEach(function(l) { %>
+    <form id="lf_<%= l.id %>" method="post" action="/admin/leads/update" style="display:none;"></form>
+  <% }); %>
+  <table class="admin-table">
+    <thead><tr><th>Дата</th><th>Имя</th><th>Телефон</th><th>Тип</th><th>Курс</th><th>Комментарий</th><th>Статус</th><th>Начало курса</th><th>Окончание курса</th><th></th></tr></thead>
+    <tbody>
+      <% leads.forEach(function(l) { var fid = 'lf_' + l.id; %>
+      <tr>
+        <td><%= new Date(l.created_at).toLocaleString('ru-RU') %></td>
+        <td><%= l.name %></td>
+        <td><%= l.phone %></td>
+        <td><%= l.type === 'consultation' ? 'Консультация' : 'Курс' %></td>
+        <td><%= l.course || '—' %></td>
+        <td style="max-width:200px;"><%= l.message || '—' %></td>
+        <td>
+          <input type="hidden" form="<%= fid %>" name="lead_id" value="<%= l.id %>">
+          <span class="badge badge-<%= l.status %>"><%= statusLabels[l.status] || l.status %></span><br>
+          <select form="<%= fid %>" name="status" style="margin-top:6px;">
+            <% Object.keys(statusLabels).forEach(function(key) { %>
+              <option value="<%= key %>" <%= l.status === key ? 'selected' : '' %>><%= statusLabels[key] %></option>
+            <% }); %>
+          </select>
+        </td>
+        <td><input form="<%= fid %>" type="date" name="start_date" value="<%= l.start_date || '' %>" style="padding:6px 8px;font-size:13px;border:1px solid var(--line);background:var(--cream);"></td>
+        <td><input form="<%= fid %>" type="date" name="end_date" value="<%= l.end_date || '' %>" style="padding:6px 8px;font-size:13px;border:1px solid var(--line);background:var(--cream);"></td>
+        <td><button form="<%= fid %>" type="submit" class="btn btn-ghost" style="padding:8px 14px;font-size:13px;">Сохранить</button></td>
+      </tr>
+      <% }); %>
+      <% if (!leads.length) { %><tr><td colspan="10" class="muted">Заявок нет.</td></tr><% } %>
+    </tbody>
+  </table>
+  <p class="muted" style="font-size:12.5px;margin-top:14px;">При статусе «Записан(а)» укажите даты начала и окончания обучения — они появятся в личном кабинете пользователя.</p>
+</div>
+
+<%- include('partials/admin_footer') %>

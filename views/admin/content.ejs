@@ -1,0 +1,72 @@
+<%- include('partials/admin_header', { adminTitle: 'Контент страниц', adminActive: 'content', adminLogin: adminLogin }) %>
+
+<div class="admin-topbar"><h1>Контент страниц</h1></div>
+<% if (notice) { %><div class="admin-panel" style="border-left:3px solid var(--gold);"><%= notice %></div><% } %>
+
+<form method="post" action="/admin/content/save">
+
+<div class="admin-panel">
+  <h2>Главная — герой</h2>
+  <div class="form-row"><label>Надпись над заголовком</label><input type="text" name="home_hero_eyebrow" value="<%= content.home.hero_eyebrow %>"></div>
+  <div class="form-row"><label>Заголовок</label><input type="text" name="home_hero_title" value="<%= content.home.hero_title %>"></div>
+  <div class="form-row"><label>Подзаголовок</label><textarea name="home_hero_lead" rows="2"><%= content.home.hero_lead %></textarea></div>
+</div>
+
+<div class="admin-panel">
+  <h2>Главная — цифры (4 показателя)</h2>
+  <div class="two-col" style="gap:16px;">
+    <div class="form-row"><label>Значение 1</label><input type="text" name="home_stat1_value" value="<%= content.home.stat1_value %>"></div>
+    <div class="form-row"><label>Подпись 1</label><input type="text" name="home_stat1_label" value="<%= content.home.stat1_label %>"></div>
+    <div class="form-row"><label>Значение 2</label><input type="text" name="home_stat2_value" value="<%= content.home.stat2_value %>"></div>
+    <div class="form-row"><label>Подпись 2</label><input type="text" name="home_stat2_label" value="<%= content.home.stat2_label %>"></div>
+    <div class="form-row"><label>Значение 3</label><input type="text" name="home_stat3_value" value="<%= content.home.stat3_value %>"></div>
+    <div class="form-row"><label>Подпись 3</label><input type="text" name="home_stat3_label" value="<%= content.home.stat3_label %>"></div>
+    <div class="form-row"><label>Значение 4</label><input type="text" name="home_stat4_value" value="<%= content.home.stat4_value %>"></div>
+    <div class="form-row"><label>Подпись 4</label><input type="text" name="home_stat4_label" value="<%= content.home.stat4_label %>"></div>
+  </div>
+</div>
+
+<div class="admin-panel">
+  <h2>Главная — «Почему у нас» (4 блока)</h2>
+  <% [1,2,3,4].forEach(function(n) { %>
+    <div class="two-col" style="gap:16px;margin-bottom:10px;">
+      <div class="form-row"><label>Заголовок <%= n %></label><input type="text" name="home_why<%= n %>_title" value="<%= content.home['why' + n + '_title'] %>"></div>
+      <div class="form-row"><label>Текст <%= n %></label><input type="text" name="home_why<%= n %>_text" value="<%= content.home['why' + n + '_text'] %>"></div>
+    </div>
+  <% }); %>
+</div>
+
+<div class="admin-panel">
+  <h2>О нас</h2>
+  <div class="form-row"><label>Заголовок страницы</label><input type="text" name="about_hero_title" value="<%= content.about.hero_title %>"></div>
+  <div class="form-row"><label>Абзац 1</label><textarea name="about_intro1" rows="2"><%= content.about.intro1 %></textarea></div>
+  <div class="form-row"><label>Абзац 2</label><textarea name="about_intro2" rows="2"><%= content.about.intro2 %></textarea></div>
+  <div class="form-row"><label>Абзац 3</label><textarea name="about_intro3" rows="2"><%= content.about.intro3 %></textarea></div>
+  <div class="two-col" style="gap:16px;">
+    <div class="form-row"><label>Работаем на рынке</label><input type="text" name="about_stat_since" value="<%= content.about.stat_since %>"></div>
+    <div class="form-row"><label>Выпускников</label><input type="text" name="about_stat_grads" value="<%= content.about.stat_grads %>"></div>
+    <div class="form-row"><label>Программ обучения</label><input type="text" name="about_stat_programs" value="<%= content.about.stat_programs %>"></div>
+    <div class="form-row"><label>Статус</label><input type="text" name="about_stat_status" value="<%= content.about.stat_status %>"></div>
+  </div>
+</div>
+
+<div class="admin-panel">
+  <h2>Контакты (используются также в шапке и футере)</h2>
+  <div class="form-row"><label>Адрес</label><input type="text" name="contacts_address" value="<%= content.contacts.address %>"></div>
+  <div class="two-col" style="gap:16px;">
+    <div class="form-row"><label>Телефон</label><input type="text" name="contacts_phone" value="<%= content.contacts.phone %>"></div>
+    <div class="form-row"><label>Email</label><input type="text" name="contacts_email" value="<%= content.contacts.email %>"></div>
+    <div class="form-row"><label>Часы работы</label><input type="text" name="contacts_hours" value="<%= content.contacts.hours %>"></div>
+    <div class="form-row"><label>Telegram (с @)</label><input type="text" name="contacts_telegram" value="<%= content.contacts.telegram %>"></div>
+  </div>
+</div>
+
+<div class="admin-panel">
+  <h2>Футер</h2>
+  <div class="form-row"><label>Короткая подпись под логотипом</label><textarea name="footer_tagline" rows="2"><%= content.footer.tagline %></textarea></div>
+</div>
+
+<button type="submit" class="btn btn-gold">Сохранить всё</button>
+</form>
+
+<%- include('partials/admin_footer') %>

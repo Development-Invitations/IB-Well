@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' — ' + siteName : siteName %></title>
+<link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/images/logo-mark.png" type="image/png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">
+      <span class="brand-mark"><img src="/images/logo-mark.png" alt="Ishonchli Buxgalter"></span>
+      <span class="brand-name"><span class="brand-main">Ishonchli Buxgalter</span><span class="brand-sub">Academy</span></span>
+    </a>
+    <nav class="main-nav">
+      <a href="/" class="<%= active === 'home' ? 'active' : '' %>">Главная</a>
+      <a href="/courses" class="<%= active === 'courses' ? 'active' : '' %>">Курсы</a>
+      <a href="/about" class="<%= active === 'about' ? 'active' : '' %>">О нас</a>
+      <a href="/blog" class="<%= active === 'blog' ? 'active' : '' %>">Блог</a>
+      <a href="/contacts" class="<%= active === 'contacts' ? 'active' : '' %>">Контакты</a>
+      <% if (currentUser) { %>
+        <div class="nav-extra-group">
+          <a href="/account" class="nav-extra <%= active === 'account' ? 'active' : '' %>">Личный кабинет</a>
+          <a href="/admin/login" class="nav-extra">Админ-панель</a>
+        </div>
+      <% } else { %>
+        <div class="nav-extra-group">
+          <a href="/register" class="nav-extra">Регистрация</a>
+          <a href="/login" class="nav-extra">Войти</a>
+          <a href="/admin/login" class="nav-extra">Админ-панель</a>
+        </div>
+      <% } %>
+    </nav>
+    <div class="header-actions">
+      <span class="header-phone"><%= content.contacts.phone %></span>
+      <a href="/admin/login" class="admin-entry-link header-auth-btn">Админ</a>
+      <% if (currentUser) { %>
+        <a href="/account" class="btn btn-ghost-light header-auth-btn" style="border-color:rgba(250,248,244,.35);"><%= currentUser.name %></a>
+      <% } else { %>
+        <a href="/register" class="btn btn-ghost-light header-auth-btn" style="border-color:rgba(250,248,244,.35);">Регистрация</a>
+        <a href="/login" class="btn btn-ghost-light header-auth-btn" style="border-color:rgba(250,248,244,.35);">Войти</a>
+      <% } %>
+      <a href="/contacts" class="btn btn-gold">Записаться</a>
+      <button class="nav-toggle" aria-label="Меню">☰</button>
+    </div>
+  </div>
+</header>
+<% if (typeof breadcrumbs !== 'undefined' && breadcrumbs.length) { %>
+<div class="breadcrumb-bar"><div class="container"><nav aria-label="Хлебные крошки" class="breadcrumb-nav">
+  <a href="/">Главная</a>
+  <% breadcrumbs.forEach(function(item) { %>
+    <span class="breadcrumb-sep">›</span>
+    <% if (item.url) { %><a href="<%= item.url %>"><%= item.label %></a>
+    <% } else { %><span class="breadcrumb-current" aria-current="page"><%= item.label %></span><% } %>
+  <% }); %>
+</nav></div></div>
+<% } %>

@@ -1,0 +1,47 @@
+<%- include('partials/header', { pageTitle: 'Личный кабинет', active: 'account', breadcrumbs: [{label: 'Личный кабинет'}] }) %>
+
+<div class="page-header">
+  <div class="hero-ledger"></div>
+  <div class="container">
+    <div class="kicker">Личный кабинет</div>
+    <h1>Здравствуйте, <%= currentUser.name %></h1>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div class="section-head" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+      <div>
+        <h2 style="font-size:24px;">Мои заявки</h2>
+        <p class="muted" style="margin:0;">Телефон для связи: <%= currentUser.phone %></p>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <a href="/contacts" class="btn btn-gold">Оставить новую заявку</a>
+        <a href="/logout" class="btn btn-ghost">Выйти</a>
+      </div>
+    </div>
+
+    <% if (!myLeads.length) { %>
+      <p class="muted">Заявок пока нет. Выберите курс на странице «Курсы» и оставьте заявку.</p>
+    <% } else { %>
+      <table class="price-table">
+        <thead><tr><th>Дата заявки</th><th>Тип</th><th>Курс</th><th>Статус</th><th>Начало</th><th>Окончание</th></tr></thead>
+        <tbody>
+        <% myLeads.forEach(function(l) { %>
+          <tr>
+            <td><%= new Date(l.created_at).toLocaleDateString('ru-RU') %></td>
+            <td><%= l.type === 'consultation' ? 'Консультация' : 'Курс' %></td>
+            <td><%= l.course || '—' %></td>
+            <td><%= statusLabels[l.status] || l.status %></td>
+            <td><%= l.start_date ? new Date(l.start_date).toLocaleDateString('ru-RU') : '—' %></td>
+            <td><%= l.end_date ? new Date(l.end_date).toLocaleDateString('ru-RU') : '—' %></td>
+          </tr>
+        <% }); %>
+        </tbody>
+      </table>
+      <p class="muted" style="font-size:13px;margin-top:14px;">Даты начала и окончания появляются после того, как менеджер подтвердит зачисление на курс.</p>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

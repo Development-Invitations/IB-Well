@@ -1,0 +1,50 @@
+<%- include('partials/admin_header', { adminTitle: 'Курсы', adminActive: 'courses', adminLogin: adminLogin }) %>
+
+<div class="admin-topbar"><h1>Курсы</h1></div>
+
+<div class="admin-panel">
+  <h2><%= editCourse ? 'Редактировать курс' : 'Добавить курс' %></h2>
+  <form method="post" action="/admin/courses/save">
+    <input type="hidden" name="id" value="<%= editCourse ? editCourse.id : '' %>">
+    <div class="two-col" style="gap:20px;">
+      <div>
+        <div class="form-row"><label>Название курса</label><input type="text" name="title" value="<%= editCourse ? editCourse.title : '' %>" required></div>
+        <div class="form-row"><label>Метка (например «Для начинающих»)</label><input type="text" name="tag" value="<%= editCourse ? editCourse.tag : '' %>"></div>
+        <div class="form-row"><label>Длительность (напр. «5 месяцев»)</label><input type="text" name="duration" value="<%= editCourse ? editCourse.duration : '' %>" required></div>
+        <div class="form-row"><label>Пояснение к длительности (необязательно)</label><input type="text" name="duration_note" placeholder="напр. 3 мес. бухгалтерия + 2 мес. 1С" value="<%= editCourse ? editCourse.duration_note : '' %>"></div>
+      </div>
+      <div>
+        <div class="form-row"><label>Цена</label><input type="text" name="price" value="<%= editCourse ? editCourse.price : '' %>" required></div>
+        <div class="form-row"><label>Формат</label><input type="text" name="format" value="<%= editCourse ? editCourse.format : 'Очно, группа' %>"></div>
+        <div class="form-row"><label>Описание</label><textarea name="summary" rows="4"><%= editCourse ? editCourse.summary : '' %></textarea></div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-gold"><%= editCourse ? 'Сохранить изменения' : 'Добавить курс' %></button>
+    <% if (editCourse) { %><a href="/admin/courses" class="btn btn-ghost">Отмена</a><% } %>
+  </form>
+</div>
+
+<div class="admin-panel">
+  <h2>Все курсы (<%= courses.length %>)</h2>
+  <table class="admin-table">
+    <thead><tr><th>Название</th><th>Длительность</th><th>Цена</th><th></th></tr></thead>
+    <tbody>
+      <% courses.forEach(function(c) { %>
+      <tr>
+        <td><%= c.title %><div class="muted" style="font-size:12.5px;"><%= c.tag %></div></td>
+        <td><%= c.duration %><% if (c.duration_note) { %><div class="muted" style="font-size:12.5px;"><%= c.duration_note %></div><% } %></td>
+        <td><%= c.price %></td>
+        <td class="admin-actions">
+          <a class="btn btn-ghost" href="?edit=<%= c.id %>">Изменить</a>
+          <form method="post" action="/admin/courses/delete" onsubmit="return confirm('Удалить курс?');">
+            <input type="hidden" name="id" value="<%= c.id %>">
+            <button type="submit" class="btn btn-ghost" style="border-color:#8B2E2E;color:#8B2E2E;">Удалить</button>
+          </form>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/admin_footer') %>

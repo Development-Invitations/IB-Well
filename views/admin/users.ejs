@@ -1,0 +1,23 @@
+<%- include('partials/admin_header', { adminTitle: 'Пользователи', adminActive: 'users', adminLogin: adminLogin }) %>
+
+<div class="admin-topbar"><h1>Пользователи (<%= users.length %>)</h1></div>
+
+<div class="admin-panel">
+  <table class="admin-table">
+    <thead><tr><th>Дата регистрации</th><th>Имя</th><th>Телефон</th><th>Логин</th><th>Заявок</th></tr></thead>
+    <tbody>
+      <% users.forEach(function(u) { %>
+      <tr>
+        <td><%= new Date(u.created_at).toLocaleDateString('ru-RU') %></td>
+        <td><%= u.name %></td>
+        <td><%= u.phone %></td>
+        <td><%= u.login %></td>
+        <td><%= leadCountByUser[u.id] || 0 %></td>
+      </tr>
+      <% }); %>
+      <% if (!users.length) { %><tr><td colspan="5" class="muted">Пока нет зарегистрированных пользователей.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/admin_footer') %>

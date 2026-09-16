@@ -1,0 +1,56 @@
+<%- include('partials/admin_header', { adminTitle: 'Настройки', adminActive: 'settings', adminLogin: adminLogin }) %>
+
+<div class="admin-topbar"><h1>Настройки</h1></div>
+
+<% if (notice) { %><div class="admin-panel" style="border-left:3px solid var(--gold);"><%= notice %></div><% } %>
+
+<div class="admin-panel">
+  <h2>Telegram-боты для заявок</h2>
+  <p class="muted">Заведите ботов через @BotFather, вставьте их токены сюда, укажите chat_id чата/группы,
+  куда должны приходить уведомления. Первый бот получает заявки на конкретные курсы, второй — заявки на консультацию,
+  третий — уведомления о каждой новой регистрации на сайте (для проверки, кто регистрируется).</p>
+  <form method="post" action="/admin/settings/bots">
+    <div class="two-col" style="gap:24px;">
+      <div>
+        <h3 style="font-size:15px;">Бот заявок на курсы</h3>
+        <div class="form-row"><label>Token</label><input type="text" name="course_token" value="<%= settings.course_bot.token %>" placeholder="123456:ABC-DEF..."></div>
+        <div class="form-row"><label>Chat ID</label><input type="text" name="course_chat_id" value="<%= settings.course_bot.chat_id %>" placeholder="-1001234567890"></div>
+      </div>
+      <div>
+        <h3 style="font-size:15px;">Бот заявок на консультацию</h3>
+        <div class="form-row"><label>Token</label><input type="text" name="consult_token" value="<%= settings.consult_bot.token %>" placeholder="123456:ABC-DEF..."></div>
+        <div class="form-row"><label>Chat ID</label><input type="text" name="consult_chat_id" value="<%= settings.consult_bot.chat_id %>" placeholder="-1001234567890"></div>
+      </div>
+    </div>
+    <div style="margin-top:18px;">
+      <h3 style="font-size:15px;">Бот уведомлений о регистрации пользователей</h3>
+      <div class="two-col" style="gap:24px;">
+        <div class="form-row"><label>Token</label><input type="text" name="register_token" value="<%= settings.register_bot.token %>" placeholder="123456:ABC-DEF..."></div>
+        <div class="form-row"><label>Chat ID</label><input type="text" name="register_chat_id" value="<%= settings.register_bot.chat_id %>" placeholder="-1001234567890"></div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-gold">Сохранить настройки ботов</button>
+  </form>
+
+  <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;">
+    <form method="post" action="/admin/settings/test-bot"><input type="hidden" name="bot_key" value="course_bot"><button type="submit" class="btn btn-ghost">Тест: бот курсов</button></form>
+    <form method="post" action="/admin/settings/test-bot"><input type="hidden" name="bot_key" value="consult_bot"><button type="submit" class="btn btn-ghost">Тест: бот консультаций</button></form>
+    <form method="post" action="/admin/settings/test-bot"><input type="hidden" name="bot_key" value="register_bot"><button type="submit" class="btn btn-ghost">Тест: бот регистраций</button></form>
+  </div>
+  <% if (testResult) { %>
+    <p style="margin-top:12px;font-size:13.5px;">
+      <%= testResult.ok ? '✅ Сообщение отправлено.' : '⚠️ Не отправлено: ' + testResult.error %>
+    </p>
+  <% } %>
+</div>
+
+<div class="admin-panel">
+  <h2>Смена пароля администратора</h2>
+  <form method="post" action="/admin/settings/password" style="max-width:420px;">
+    <div class="form-row"><label>Текущий пароль</label><input type="password" name="current_password" required></div>
+    <div class="form-row"><label>Новый пароль</label><input type="password" name="new_password" minlength="6" required></div>
+    <button type="submit" class="btn btn-gold">Изменить пароль</button>
+  </form>
+</div>
+
+<%- include('partials/admin_footer') %>

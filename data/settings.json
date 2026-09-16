@@ -1,4 +1,5 @@
 {
   "course_bot": { "token": "", "chat_id": "", "label": "Бот заявок на курсы" },
-  "consult_bot": { "token": "", "chat_id": "", "label": "Бот заявок на консультацию" }
+  "consult_bot": { "token": "", "chat_id": "", "label": "Бот заявок на консультацию" },
+  "register_bot": { "token": "", "chat_id": "", "label": "Бот уведомлений о регистрации" }
 }

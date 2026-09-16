@@ -1,0 +1,48 @@
+<%- include('partials/admin_header', { adminTitle: 'Блог', adminActive: 'posts', adminLogin: adminLogin }) %>
+
+<div class="admin-topbar"><h1>Блог</h1></div>
+
+<div class="admin-panel">
+  <h2><%= editPost ? 'Редактировать статью' : 'Новая статья' %></h2>
+  <form method="post" action="/admin/posts/save">
+    <input type="hidden" name="id" value="<%= editPost ? editPost.id : '' %>">
+    <div class="form-row"><label>Заголовок</label><input type="text" name="title" value="<%= editPost ? editPost.title : '' %>" required></div>
+    <div class="two-col" style="gap:20px;">
+      <div class="form-row"><label>Дата публикации</label><input type="date" name="date" value="<%= editPost ? editPost.date : today %>"></div>
+      <div class="form-row">
+        <label>Связанный курс (необязательно)</label>
+        <select name="course_id">
+          <option value="">— без привязки —</option>
+          <% courses.forEach(function(c) { %><option value="<%= c.id %>" <%= editPost && editPost.course_id === c.id ? 'selected' : '' %>><%= c.title %></option><% }); %>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Текст (краткое содержание)</label><textarea name="excerpt" rows="5" required><%= editPost ? editPost.excerpt : '' %></textarea></div>
+    <button type="submit" class="btn btn-gold"><%= editPost ? 'Сохранить' : 'Опубликовать' %></button>
+    <% if (editPost) { %><a href="/admin/posts" class="btn btn-ghost">Отмена</a><% } %>
+  </form>
+</div>
+
+<div class="admin-panel">
+  <h2>Все статьи (<%= posts.length %>)</h2>
+  <table class="admin-table">
+    <thead><tr><th>Дата</th><th>Заголовок</th><th></th></tr></thead>
+    <tbody>
+      <% posts.forEach(function(p) { %>
+      <tr>
+        <td><%= new Date(p.date).toLocaleDateString('ru-RU') %></td>
+        <td><%= p.title %></td>
+        <td class="admin-actions">
+          <a class="btn btn-ghost" href="?edit=<%= p.id %>">Изменить</a>
+          <form method="post" action="/admin/posts/delete" onsubmit="return confirm('Удалить статью?');">
+            <input type="hidden" name="id" value="<%= p.id %>">
+            <button type="submit" class="btn btn-ghost" style="border-color:#8B2E2E;color:#8B2E2E;">Удалить</button>
+          </form>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('partials/admin_footer') %>

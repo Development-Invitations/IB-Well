@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проверка установки — <%= siteName %></title>
+<link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<style>
+  body{background:var(--ink);}
+  .hc-wrap{max-width:720px;margin:0 auto;padding:48px 20px;}
+  .hc-table{width:100%;border-collapse:collapse;background:var(--paper);}
+  .hc-table td{padding:12px 16px;border-bottom:1px solid var(--line-soft);font-size:14.5px;}
+  .hc-table tr:last-child td{border-bottom:none;}
+</style>
+</head>
+<body>
+<div class="hc-wrap">
+  <div class="form-card" style="max-width:none;">
+    <h1 style="font-size:22px;">Проверка установки сайта (Node.js)</h1>
+    <p class="muted">Версия сборки: <b><%= siteVersion %></b> от <%= buildDate %> · Node <%= nodeVersion %></p>
+
+    <h2 style="font-size:16px;margin-top:24px;">1. Окружение сервера</h2>
+    <table class="hc-table">
+      <tr><td>Node.js версия 18 или выше</td><td style="text-align:center;"><%= nodeOk ? '✅' : '❌' %></td><td class="muted" style="font-size:13px;"><%= nodeVersion %></td></tr>
+      <tr><td>Папка data/ доступна на запись</td><td style="text-align:center;"><%= dataWritable ? '✅' : '❌' %></td><td class="muted" style="font-size:13px;"><%= dataWritable ? 'тест записи успешен' : 'нет прав на запись' %></td></tr>
+      <tr><td>Процесс Node.js запущен и отвечает</td><td style="text-align:center;">✅</td><td class="muted" style="font-size:13px;">раз вы видите эту страницу — значит, да</td></tr>
+    </table>
+
+    <h2 style="font-size:16px;margin-top:24px;">2. Файлы сайта</h2>
+    <table class="hc-table">
+      <% files.forEach(function(f) { %>
+        <tr><td><%= f.label %></td><td style="text-align:center;"><%= f.ok ? '✅' : '❌' %></td><td class="muted" style="font-size:13px;"><%= f.path %></td></tr>
+      <% }); %>
+    </table>
+
+    <h2 style="font-size:16px;margin-top:24px;">3. Состояние данных</h2>
+    <table class="hc-table">
+      <% if (adminExists) { %>
+        <tr><td>Администратор создан</td><td style="text-align:center;">✅</td><td class="muted" style="font-size:13px;">можно входить в /admin/login</td></tr>
+      <% } else { %>
+        <tr><td>Администратор ещё не создан</td><td style="text-align:center;">❌</td><td class="muted" style="font-size:13px;">откройте /install и задайте логин/пароль</td></tr>
+      <% } %>
+      <tr><td>Пользователей зарегистрировано</td><td style="text-align:center;">✅</td><td class="muted" style="font-size:13px;"><%= usersCount %> чел.</td></tr>
+      <tr><td>Заявок в базе</td><td style="text-align:center;">✅</td><td class="muted" style="font-size:13px;"><%= leadsCount %> шт.</td></tr>
+    </table>
+
+    <p class="muted" style="font-size:13px;margin-top:24px;">
+      Если все пункты выше зелёные — сайт установлен верно. Если что-то красное —
+      именно это нужно поправить (перезалить файл / выставить права на папку data/ /
+      убедиться, что процесс Node.js действительно запущен через npm start или PM2).
+    </p>
+  </div>
+</div>
+</body>
+</html>

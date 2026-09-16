@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Установка — <%= siteName %></title>
+<link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body style="background:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;">
+<div class="form-card" style="width:100%;max-width:440px;">
+  <h1 style="font-size:22px;">Первичная настройка</h1>
+
+  <% if (adminExists && !done) { %>
+    <p class="muted">Администратор уже создан. Этот файл можно закрыть/удалить с сервера — им больше нельзя воспользоваться повторно.</p>
+    <a href="/admin/login" class="btn btn-gold" style="width:100%;justify-content:center;">Перейти к входу в админку</a>
+
+  <% } else if (done) { %>
+    <p style="color:#2E4A2F;">Аккаунт администратора создан. Теперь можно закрыть эту страницу.</p>
+    <a href="/admin/login" class="btn btn-gold" style="width:100%;justify-content:center;">Войти в админку</a>
+
+  <% } else { %>
+    <p class="muted">Задайте логин и пароль администратора панели. Это разовая настройка — после её выполнения страница отключится.</p>
+    <% if (error) { %><p style="color:#8B2E2E;"><%= error %></p><% } %>
+    <form method="post">
+      <div class="form-row"><label for="login">Логин администратора</label><input type="text" id="login" name="login" required></div>
+      <div class="form-row"><label for="password">Пароль</label><input type="password" id="password" name="password" required minlength="6"></div>
+      <div class="form-row"><label for="password2">Повторите пароль</label><input type="password" id="password2" name="password2" required minlength="6"></div>
+      <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Создать администратора</button>
+    </form>
+  <% } %>
+</div>
+</body>
+</html>

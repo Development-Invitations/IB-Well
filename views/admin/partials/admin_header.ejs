@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= typeof adminTitle !== 'undefined' ? adminTitle + ' — Админка' : 'Админка' %></title>
+<link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="brand"><span class="brand-mark"><img src="/images/logo-mark.png" alt=""></span><span class="brand-name"><span class="brand-main">Админка</span></span></div>
+    <nav>
+      <a href="/admin" class="<%= adminActive === 'dashboard' ? 'active' : '' %>">Дашборд</a>
+      <a href="/admin/leads" class="<%= adminActive === 'leads' ? 'active' : '' %>">Заявки</a>
+      <a href="/admin/courses" class="<%= adminActive === 'courses' ? 'active' : '' %>">Курсы</a>
+      <a href="/admin/posts" class="<%= adminActive === 'posts' ? 'active' : '' %>">Блог</a>
+      <a href="/admin/content" class="<%= adminActive === 'content' ? 'active' : '' %>">Контент страниц</a>
+      <a href="/admin/users" class="<%= adminActive === 'users' ? 'active' : '' %>">Пользователи</a>
+      <a href="/admin/settings" class="<%= adminActive === 'settings' ? 'active' : '' %>">Настройки / Боты</a>
+    </nav>
+    <div class="sidebar-foot">
+      <a href="/" target="_blank">↗ Открыть сайт</a>
+      <a href="/healthcheck" target="_blank">🩺 Проверка установки</a>
+      <a href="/admin/logout">Выйти (<%= adminLogin %>)</a>
+    </div>
+  </aside>
+  <main class="admin-main">

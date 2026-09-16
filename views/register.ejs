@@ -1,0 +1,30 @@
+<%- include('partials/header', { pageTitle: 'Регистрация', active: 'account', breadcrumbs: [{label: 'Регистрация'}] }) %>
+
+<div class="page-header">
+  <div class="hero-ledger"></div>
+  <div class="container">
+    <div class="kicker">Личный кабинет</div>
+    <h1>Регистрация</h1>
+  </div>
+</div>
+
+<section>
+  <div class="container" style="max-width:480px;">
+    <div class="form-card" style="max-width:none;">
+      <p class="muted">Аккаунт нужен, чтобы оставлять заявки на курсы и следить за их статусом.</p>
+      <% if (error) { %><p style="color:#8B2E2E;font-size:14.5px;"><%= error %></p><% } %>
+      <form method="post">
+        <div class="form-row"><label for="name">Имя</label><input type="text" id="name" name="name" value="<%= form.name || '' %>" required></div>
+        <div class="form-row"><label for="phone">Телефон</label>
+          <input type="tel" id="phone" name="phone" data-phone-mask placeholder="+998 90 123 45 67" maxlength="17" value="<%= form.phone || '' %>" required>
+        </div>
+        <div class="form-row"><label for="login">Логин</label><input type="text" id="login" name="login" value="<%= form.login || '' %>" required></div>
+        <div class="form-row"><label for="password">Пароль</label><input type="password" id="password" name="password" minlength="6" required></div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Зарегистрироваться</button>
+        <p class="form-note">Уже есть аккаунт? <a href="/login" style="border-bottom:1px solid var(--gold);">Войти</a></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

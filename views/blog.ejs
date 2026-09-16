@@ -1,0 +1,35 @@
+<%- include('partials/header', { pageTitle: 'Блог', active: 'blog', breadcrumbs: [{label: 'Блог'}] }) %>
+
+<div class="page-header">
+  <div class="hero-ledger"></div>
+  <div class="container">
+    <div class="kicker">Блог</div>
+    <h1>Полезное о бухучёте и 1С</h1>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div class="blog-full-grid">
+      <% posts.forEach(function(p) { var course = coursesById[p.course_id]; %>
+      <article class="blog-full-card" id="<%= p.id %>">
+        <div class="blog-date"><%= new Date(p.date).toLocaleDateString('ru-RU') %></div>
+        <h2 style="font-size:21px;"><%= p.title %></h2>
+        <p><%= p.excerpt %></p>
+        <% if (course) { %>
+          <a href="/courses#<%= course.id %>" class="details" style="font-size:14px;font-weight:600;border-bottom:1px solid var(--gold);">Изучить на курсе «<%= course.title %>» →</a>
+        <% } %>
+      </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Хотите разбираться в этом на практике?</h2>
+    <a href="/courses" class="btn btn-gold">Смотреть курсы</a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
