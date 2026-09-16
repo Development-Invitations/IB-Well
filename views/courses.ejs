@@ -20,14 +20,14 @@
       <tbody>
         <% courses.forEach(function(c) { %>
         <tr id="<%= c.id %>">
-          <td>
+          <td data-label="Курс">
             <div class="p-name"><%= c.title %></div>
             <div class="muted" style="font-size:13.5px;margin-top:4px;"><%= c.summary %></div>
             <% if (c.duration_note) { %><div style="font-size:13px;color:var(--gold-deep);margin-top:6px;font-weight:600;"><%= c.duration_note %></div><% } %>
           </td>
-          <td><%= c.duration %></td>
-          <td><%= c.format %></td>
-          <td class="p-price"><%= c.price %></td>
+          <td data-label="Длительность"><%= c.duration %></td>
+          <td data-label="Формат"><%= c.format %></td>
+          <td data-label="Стоимость" class="p-price"><%= c.price %></td>
         </tr>
         <% }); %>
       </tbody>

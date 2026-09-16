@@ -34,6 +34,7 @@
           <a href="/admin/login" class="nav-extra">Админ-панель</a>
         </div>
       <% } %>
+      <div class="nav-cta-mobile"><a href="/contacts" class="btn btn-gold">Записаться</a></div>
     </nav>
     <div class="header-actions">
       <span class="header-phone"><%= content.contacts.phone %></span>
@@ -45,10 +46,13 @@
         <a href="/login" class="btn btn-ghost-light header-auth-btn" style="border-color:rgba(250,248,244,.35);">Войти</a>
       <% } %>
       <a href="/contacts" class="btn btn-gold">Записаться</a>
-      <button class="nav-toggle" aria-label="Меню">☰</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Меню" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </header>
+<div class="nav-backdrop" id="navBackdrop"></div>
 <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs.length) { %>
 <div class="breadcrumb-bar"><div class="container"><nav aria-label="Хлебные крошки" class="breadcrumb-nav">
   <a href="/">Главная</a>

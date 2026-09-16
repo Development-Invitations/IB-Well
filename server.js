@@ -22,7 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const SITE_NAME = 'Ishonchli Buxgalter Academy';
-const SITE_VERSION = '1.1.0-node';
+const SITE_VERSION = '1.2.0-node';
 const BUILD_DATE = '2026-09-16';
 
 const STATUS_LABELS = { new: 'Новая', contacted: 'Связались', enrolled: 'Записан(а)' };

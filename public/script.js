@@ -1,10 +1,37 @@
 document.addEventListener('DOMContentLoaded', function () {
-  var toggle = document.querySelector('.nav-toggle');
+  var toggle = document.getElementById('navToggle');
   var nav = document.querySelector('.main-nav');
+  var backdrop = document.getElementById('navBackdrop');
+
+  function setMenu(open) {
+    if (!nav || !toggle) return;
+    nav.classList.toggle('open', open);
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (backdrop) backdrop.classList.toggle('show', open);
+    document.body.classList.toggle('nav-open', open);
+  }
+
   if (toggle && nav) {
-    toggle.addEventListener('click', function () {
-      nav.classList.toggle('open');
-      toggle.textContent = nav.classList.contains('open') ? '✕' : '☰';
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setMenu(!nav.classList.contains('open'));
+    });
+
+    // Закрываем по клику на ссылку меню
+    nav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { setMenu(false); });
+    });
+
+    if (backdrop) backdrop.addEventListener('click', function () { setMenu(false); });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setMenu(false);
+    });
+
+    // Если окно расширили до десктопа — сбрасываем состояние
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 980) setMenu(false);
     });
   }
 
