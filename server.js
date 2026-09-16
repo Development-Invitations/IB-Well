@@ -447,6 +447,12 @@ app.use((req, res) => {
   res.status(404).send('Страница не найдена — 404');
 });
 
-app.listen(PORT, () => {
-  console.log(`${SITE_NAME} запущен: http://localhost:${PORT}`);
-});
+// На обычном хостинге/VPS — запускаем постоянный сервер.
+// На serverless-платформах (Vercel и т.п.) — экспортируем приложение.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`${SITE_NAME} запущен: http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
