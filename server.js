@@ -22,10 +22,59 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const SITE_NAME = 'Ishonchli Buxgalter Academy';
-const SITE_VERSION = '1.2.0-node';
+const SITE_VERSION = '1.3.0-node';
 const BUILD_DATE = '2026-09-16';
 
 const STATUS_LABELS = { new: 'Новая', contacted: 'Связались', enrolled: 'Записан(а)' };
+
+// Значения по умолчанию — подстраховка на случай неполного/повреждённого
+// content.json (например, после ручного редактирования файла).
+const DEFAULT_CONTENT = {
+  home: {
+    hero_eyebrow: 'Учебный центр «Ishonchli Buxgalter» · Фергана',
+    hero_title: 'Профессия бухгалтера, которая всегда нужна бизнесу',
+    hero_lead: 'Учим вести учёт и работать в «1С:Предприятие 8, Бухгалтерия Узбекистана 3.0».',
+    stat1_value: '7 лет', stat1_label: 'обучаем бухучёту и 1С',
+    stat2_value: '430+', stat2_label: 'выпускников курсов',
+    stat3_value: '6', stat3_label: 'программ обучения',
+    stat4_value: '1С®', stat4_label: 'официальный партнёр-франчайзи',
+    why1_title: 'Преподают практики', why1_text: '',
+    why2_title: 'Официальный партнёр 1С', why2_text: '',
+    why3_title: 'Законодательство РУз', why3_text: '',
+    why4_title: 'Поддержка после курса', why4_text: '',
+  },
+  about: {
+    hero_title: 'Ishonchli Buxgalter — надёжный партнёр в мире учёта',
+    intro1: '', intro2: '', intro3: '',
+    stat_since: 'с 2018 года', stat_grads: '430+', stat_programs: '6', stat_status: 'Официальный партнёр 1С',
+  },
+  contacts: {
+    address: 'г. Фергана, ул. Мустакиллик, 24',
+    phone: '+998 99 918 00 10',
+    email: 'info@ishonchli-buxgalter.uz',
+    hours: 'Пн–Сб, 9:00–18:00',
+    telegram: '@ishonchli_buxgalter',
+  },
+  footer: { tagline: 'Учебный центр и 1С-франчайзи в Фергане.' },
+};
+
+function loadContent() {
+  const saved = readJson('content.json', {});
+  const merged = {};
+  for (const section of Object.keys(DEFAULT_CONTENT)) {
+    merged[section] = Object.assign({}, DEFAULT_CONTENT[section], saved[section] || {});
+  }
+  return merged;
+}
+
+// Express 4 не ловит ошибки из async-функций сам по себе — оборачиваем,
+// чтобы любая ошибка (например, невозможность записать файл) долетала
+// до общего обработчика ошибок, а не роняла процесс молча.
+function asyncHandler(fn) {
+  return function (req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -45,7 +94,7 @@ app.use((req, res, next) => {
   res.locals.siteVersion = SITE_VERSION;
   res.locals.buildDate = BUILD_DATE;
   res.locals.currentUser = auth.currentUser(req);
-  res.locals.content = readJson('content.json', {});
+  res.locals.content = loadContent();
   next();
 });
 
@@ -80,7 +129,7 @@ app.get('/register', (req, res) => {
   res.render('register', { error: '', form: {} });
 });
 
-app.post('/register', async (req, res) => {
+app.post('/register', asyncHandler(async (req, res) => {
   if (auth.currentUser(req)) return res.redirect('/account');
   const { name, phone, login, password } = req.body;
   let error = '';
@@ -100,7 +149,7 @@ app.post('/register', async (req, res) => {
     error = result.error;
   }
   res.render('register', { error, form: req.body });
-});
+}));
 
 app.get('/login', (req, res) => {
   if (auth.currentUser(req)) return res.redirect('/account');
@@ -129,7 +178,7 @@ app.get('/account', auth.requireLogin, (req, res) => {
   res.render('account', { myLeads: leads, statusLabels: STATUS_LABELS });
 });
 
-app.post('/apply', auth.requireLogin, async (req, res) => {
+app.post('/apply', auth.requireLogin, asyncHandler(async (req, res) => {
   const user = auth.currentUser(req);
   const course = (req.body.course || '').trim();
   const message = (req.body.message || '').trim();
@@ -153,7 +202,7 @@ app.post('/apply', auth.requireLogin, async (req, res) => {
   notifyNewLead(lead).catch(() => {});
 
   res.redirect('/contacts?sent=1');
-});
+}));
 
 // ==================== УСТАНОВКА ====================
 
@@ -161,7 +210,7 @@ app.get('/install', (req, res) => {
   res.render('install', { adminExists: auth.adminExists(), done: false, error: '' });
 });
 
-app.post('/install', async (req, res) => {
+app.post('/install', asyncHandler(async (req, res) => {
   if (auth.adminExists()) {
     return res.render('install', { adminExists: true, done: false, error: '' });
   }
@@ -175,7 +224,7 @@ app.post('/install', async (req, res) => {
 
   await auth.createAdmin(login, password);
   res.render('install', { adminExists: false, done: true, error: '' });
-});
+}));
 
 // ==================== ДИАГНОСТИКА ====================
 
@@ -285,7 +334,7 @@ adminRouter.get('/leads', (req, res) => {
   res.render('admin/leads', { adminLogin: req.session.admin, leads, filter, statusLabels: STATUS_LABELS });
 });
 
-adminRouter.post('/leads/update', async (req, res) => {
+adminRouter.post('/leads/update', asyncHandler(async (req, res) => {
   const leads = readJson('leads.json', []);
   const lead = leads.find(l => l.id === req.body.lead_id);
   if (lead) {
@@ -295,7 +344,7 @@ adminRouter.post('/leads/update', async (req, res) => {
     await writeJson('leads.json', leads);
   }
   res.redirect('/admin/leads');
-});
+}));
 
 adminRouter.get('/courses', (req, res) => {
   const courses = readJson('courses.json', []);
@@ -303,7 +352,7 @@ adminRouter.get('/courses', (req, res) => {
   res.render('admin/courses', { adminLogin: req.session.admin, courses, editCourse });
 });
 
-adminRouter.post('/courses/save', async (req, res) => {
+adminRouter.post('/courses/save', asyncHandler(async (req, res) => {
   const courses = readJson('courses.json', []);
   const data = {
     tag: req.body.tag || '', title: req.body.title || '', summary: req.body.summary || '',
@@ -319,13 +368,13 @@ adminRouter.post('/courses/save', async (req, res) => {
   }
   await writeJson('courses.json', courses);
   res.redirect('/admin/courses');
-});
+}));
 
-adminRouter.post('/courses/delete', async (req, res) => {
+adminRouter.post('/courses/delete', asyncHandler(async (req, res) => {
   const courses = readJson('courses.json', []).filter(c => c.id !== req.body.id);
   await writeJson('courses.json', courses);
   res.redirect('/admin/courses');
-});
+}));
 
 adminRouter.get('/posts', (req, res) => {
   const posts = readJson('posts.json', []).sort((a, b) => b.date.localeCompare(a.date));
@@ -334,7 +383,7 @@ adminRouter.get('/posts', (req, res) => {
   res.render('admin/posts', { adminLogin: req.session.admin, posts, courses, editPost, today: new Date().toISOString().slice(0, 10) });
 });
 
-adminRouter.post('/posts/save', async (req, res) => {
+adminRouter.post('/posts/save', asyncHandler(async (req, res) => {
   const posts = readJson('posts.json', []);
   const data = {
     title: req.body.title || '', excerpt: req.body.excerpt || '',
@@ -350,46 +399,52 @@ adminRouter.post('/posts/save', async (req, res) => {
   }
   await writeJson('posts.json', posts);
   res.redirect('/admin/posts');
-});
+}));
 
-adminRouter.post('/posts/delete', async (req, res) => {
+adminRouter.post('/posts/delete', asyncHandler(async (req, res) => {
   const posts = readJson('posts.json', []).filter(p => p.id !== req.body.id);
   await writeJson('posts.json', posts);
   res.redirect('/admin/posts');
-});
+}));
 
 adminRouter.get('/content', (req, res) => {
-  res.render('admin/content', { adminLogin: req.session.admin, content: readJson('content.json', {}), notice: '' });
+  res.render('admin/content', { adminLogin: req.session.admin, content: loadContent(), notice: '' });
 });
 
-adminRouter.post('/content/save', async (req, res) => {
-  const content = readJson('content.json', {});
+adminRouter.post('/content/save', asyncHandler(async (req, res) => {
+  const content = loadContent();
   const b = req.body;
+  const pick = (section, key, formKey) => (b[formKey] !== undefined ? b[formKey] : (content[section] && content[section][key]) || '');
+
   content.home = {
-    hero_eyebrow: b.home_hero_eyebrow, hero_title: b.home_hero_title, hero_lead: b.home_hero_lead,
-    stat1_value: b.home_stat1_value, stat1_label: b.home_stat1_label,
-    stat2_value: b.home_stat2_value, stat2_label: b.home_stat2_label,
-    stat3_value: b.home_stat3_value, stat3_label: b.home_stat3_label,
-    stat4_value: b.home_stat4_value, stat4_label: b.home_stat4_label,
-    why1_title: b.home_why1_title, why1_text: b.home_why1_text,
-    why2_title: b.home_why2_title, why2_text: b.home_why2_text,
-    why3_title: b.home_why3_title, why3_text: b.home_why3_text,
-    why4_title: b.home_why4_title, why4_text: b.home_why4_text,
+    hero_eyebrow: pick('home', 'hero_eyebrow', 'home_hero_eyebrow'),
+    hero_title: pick('home', 'hero_title', 'home_hero_title'),
+    hero_lead: pick('home', 'hero_lead', 'home_hero_lead'),
+    stat1_value: pick('home', 'stat1_value', 'home_stat1_value'), stat1_label: pick('home', 'stat1_label', 'home_stat1_label'),
+    stat2_value: pick('home', 'stat2_value', 'home_stat2_value'), stat2_label: pick('home', 'stat2_label', 'home_stat2_label'),
+    stat3_value: pick('home', 'stat3_value', 'home_stat3_value'), stat3_label: pick('home', 'stat3_label', 'home_stat3_label'),
+    stat4_value: pick('home', 'stat4_value', 'home_stat4_value'), stat4_label: pick('home', 'stat4_label', 'home_stat4_label'),
+    why1_title: pick('home', 'why1_title', 'home_why1_title'), why1_text: pick('home', 'why1_text', 'home_why1_text'),
+    why2_title: pick('home', 'why2_title', 'home_why2_title'), why2_text: pick('home', 'why2_text', 'home_why2_text'),
+    why3_title: pick('home', 'why3_title', 'home_why3_title'), why3_text: pick('home', 'why3_text', 'home_why3_text'),
+    why4_title: pick('home', 'why4_title', 'home_why4_title'), why4_text: pick('home', 'why4_text', 'home_why4_text'),
   };
   content.about = {
-    hero_title: b.about_hero_title,
-    intro1: b.about_intro1, intro2: b.about_intro2, intro3: b.about_intro3,
-    stat_since: b.about_stat_since, stat_grads: b.about_stat_grads,
-    stat_programs: b.about_stat_programs, stat_status: b.about_stat_status,
+    hero_title: pick('about', 'hero_title', 'about_hero_title'),
+    intro1: pick('about', 'intro1', 'about_intro1'), intro2: pick('about', 'intro2', 'about_intro2'), intro3: pick('about', 'intro3', 'about_intro3'),
+    stat_since: pick('about', 'stat_since', 'about_stat_since'), stat_grads: pick('about', 'stat_grads', 'about_stat_grads'),
+    stat_programs: pick('about', 'stat_programs', 'about_stat_programs'), stat_status: pick('about', 'stat_status', 'about_stat_status'),
   };
   content.contacts = {
-    address: b.contacts_address, phone: b.contacts_phone, email: b.contacts_email,
-    hours: b.contacts_hours, telegram: b.contacts_telegram,
+    address: pick('contacts', 'address', 'contacts_address'), phone: pick('contacts', 'phone', 'contacts_phone'),
+    email: pick('contacts', 'email', 'contacts_email'), hours: pick('contacts', 'hours', 'contacts_hours'),
+    telegram: pick('contacts', 'telegram', 'contacts_telegram'),
   };
-  content.footer = { tagline: b.footer_tagline };
+  content.footer = { tagline: pick('footer', 'tagline', 'footer_tagline') };
+
   await writeJson('content.json', content);
   res.render('admin/content', { adminLogin: req.session.admin, content, notice: 'Контент сохранён и уже применился на сайте.' });
-});
+}));
 
 adminRouter.get('/users', (req, res) => {
   const users = readJson('users.json', []).sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -407,23 +462,23 @@ adminRouter.get('/settings', (req, res) => {
   res.render('admin/settings', { adminLogin: req.session.admin, settings, notice: '', testResult: null });
 });
 
-adminRouter.post('/settings/bots', async (req, res) => {
+adminRouter.post('/settings/bots', asyncHandler(async (req, res) => {
   const settings = readJson('settings.json', {});
   settings.course_bot = { token: req.body.course_token || '', chat_id: req.body.course_chat_id || '', label: 'Бот заявок на курсы' };
   settings.consult_bot = { token: req.body.consult_token || '', chat_id: req.body.consult_chat_id || '', label: 'Бот заявок на консультацию' };
   settings.register_bot = { token: req.body.register_token || '', chat_id: req.body.register_chat_id || '', label: 'Бот уведомлений о регистрации' };
   await writeJson('settings.json', settings);
   res.render('admin/settings', { adminLogin: req.session.admin, settings, notice: 'Настройки ботов сохранены.', testResult: null });
-});
+}));
 
-adminRouter.post('/settings/test-bot', async (req, res) => {
+adminRouter.post('/settings/test-bot', asyncHandler(async (req, res) => {
   const settings = readJson('settings.json', {});
   const bot = settings[req.body.bot_key];
   const testResult = bot ? await tgSend(bot.token, bot.chat_id, 'Тестовое сообщение от сайта Ishonchli Buxgalter Academy ✅') : { ok: false, error: 'бот не найден' };
   res.render('admin/settings', { adminLogin: req.session.admin, settings, notice: '', testResult });
-});
+}));
 
-adminRouter.post('/settings/password', async (req, res) => {
+adminRouter.post('/settings/password', asyncHandler(async (req, res) => {
   const bcrypt = require('bcryptjs');
   const admin = auth.getAdmin();
   const settings = readJson('settings.json', {});
@@ -438,13 +493,41 @@ adminRouter.post('/settings/password', async (req, res) => {
     notice = 'Пароль администратора изменён.';
   }
   res.render('admin/settings', { adminLogin: req.session.admin, settings, notice, testResult: null });
-});
+}));
 
 app.use('/admin', adminRouter);
 
 // 404
 app.use((req, res) => {
   res.status(404).send('Страница не найдена — 404');
+});
+
+// Единый обработчик ошибок: вместо белого экрана/500 — понятное объяснение,
+// особенно полезно на хостингах с файловой системой только для чтения (Vercel и т.п.)
+app.use((err, req, res, next) => {
+  console.error('Ошибка:', err);
+  const isReadOnly = /EROFS|read-only|EACCES|EPERM/i.test(err && err.message || '');
+  res.status(500).send(`<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ошибка сохранения</title>
+<link rel="stylesheet" href="/style.css"></head>
+<body style="background:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;">
+<div class="form-card" style="max-width:520px;">
+  <h1 style="font-size:20px;">Не удалось сохранить</h1>
+  ${isReadOnly
+    ? `<p>Похоже, сайт размещён на хостинге, где файловая система доступна только для чтения
+       (например, Vercel). Проект хранит все данные (курсы, заявки, контент, пользователей)
+       в обычных файлах — на таких платформах запись невозможна физически, это ограничение
+       самого хостинга, а не ошибка в коде.</p>
+       <p class="muted" style="font-size:13.5px;">Решение: перенести сайт на хостинг с обычной
+       файловой системой (VPS, Render, Railway, обычный Node.js-хостинг) — там всё заработает
+       без изменений в коде.</p>`
+    : `<p class="muted">Техническая причина: ${(err && err.message) || 'неизвестная ошибка'}</p>`
+  }
+  <a href="javascript:history.back()" class="btn btn-ghost" style="margin-top:12px;">Назад</a>
+</div>
+</body></html>`);
 });
 
 // На обычном хостинге/VPS — запускаем постоянный сервер.
